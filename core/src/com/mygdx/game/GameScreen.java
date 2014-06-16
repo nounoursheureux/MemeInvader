@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import java.util.Iterator;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
+import java.lang.Enum;
 
 public class GameScreen implements Screen {
 	private MyGdxGame game;
@@ -49,14 +51,14 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		font.draw(batch, str_score, 20, 450);
+		font.draw(batch, str_score, 20, 380);
 		for (i = 0; i < world.getHealth(); i++) batch.draw(heart, 20 + 50 * i, 400);
 		batch.draw(trollface.getTexture(), trollface.x, trollface.y);
 		for (Meteorite meteorite: world.getMeteorites()) batch.draw(meteorite.getTexture(), meteorite.x, meteorite.y);
 		for (Ennemy ennemy: world.getEnnemies()) batch.draw(ennemy.getTexture(), ennemy.x, ennemy.y);
 		for (Bullet projectile: world.getProjectiles()) batch.draw(projectile.getTexture(), projectile.x, projectile.y);
-		batch.draw(arrow_l, 20, 20);
-		batch.draw(arrow_r, 168, 20);
+		if (Gdx.app.getType() == Application.ApplicationType.Android) batch.draw(arrow_l, 20, 20);
+		if (Gdx.app.getType() == Application.ApplicationType.Android) batch.draw(arrow_r, 168, 20);
 		batch.end();
 		if (Gdx.input.isTouched() && Gdx.input.getX() > 296 && Gdx.input.getX() < 640 && world.fireReady()) trollface.fire(world);
 		if (Gdx.input.isTouched(1) && Gdx.input.getX(1) > 296 && Gdx.input.getX(1) < 640 && world.fireReady()) trollface.fire(world);

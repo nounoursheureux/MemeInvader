@@ -25,7 +25,7 @@ public class StartScreen implements Screen {
     public void render(float delta) { 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		font.draw(batch, str, 300, 240);
+		font.draw(batch, str, 250, 300);
 		batch.end();
 		if (Gdx.input.isTouched()) game.setScreen(new GameScreen(game));
     }
