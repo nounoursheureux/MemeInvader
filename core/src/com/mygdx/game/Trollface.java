@@ -2,39 +2,41 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class Trollface extends Rectangle {
+public class Trollface extends Sprite {
 	private Texture trollface_l;
 	private Texture trollface_r;
 	private boolean go_right;
 	
-	Trollface(float x, float y, float width, float height) {
-		super(x, y, width, height);
+	Trollface(int x, int y) {
+		super(new Texture(Gdx.files.internal("trollface_right.png")));
+		setPosition(x,y);
 		trollface_l = new Texture(Gdx.files.internal("trollface_left.png"));
 		trollface_r = new Texture(Gdx.files.internal("trollface_right.png"));
 	}
 	
-	Texture getTexture() {
-		if (go_right) return trollface_r;
-		if (!go_right) return trollface_l;
-		return trollface_r;
-	}
-	
 	void moveLeft() {
-		x -= 600 * Gdx.graphics.getDeltaTime();
-		if (go_right) go_right = false;
+		translateX(-600 * Gdx.graphics.getDeltaTime());
+		if (go_right) {
+			go_right = false;
+			setTexture(trollface_l);
+		}
 	}
 	
 	void moveRight() {
-		x += 600 * Gdx.graphics.getDeltaTime();
-		if (!go_right) go_right = true;
+		translateX(600 * Gdx.graphics.getDeltaTime());
+		if (!go_right) { 
+			go_right = true;
+			setTexture(trollface_r);
+		}
 	}
 	
 	void fire(World world) {
-		Bullet projectile = new Bullet((float)x + 75, (float)y, 32.0f, 32.0f);
+		Bullet projectile = new Bullet(getX() + 75, getY(), 32.0f, 32.0f);
 		world.resetFireTimer();
 		world.addProjectile(projectile);
 	}

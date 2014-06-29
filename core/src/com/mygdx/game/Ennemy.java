@@ -2,38 +2,40 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class Ennemy extends Rectangle {
+public class Ennemy extends Sprite {
 	private boolean go_right = true;
 	private Texture nyan_texture_r, nyan_texture_l;
 
-	Ennemy(float x, float y, float width, float height) {
-		super(x, y, width, height);
+	Ennemy(float x, float y) {
+		super(new Texture("nyan_cat_right.png"));
+		setPosition(x,y);
 		nyan_texture_r = new Texture(Gdx.files.internal("nyan_cat_right.png"));
 		nyan_texture_l = new Texture(Gdx.files.internal("nyan_cat_left.png"));
-	}
-	
-	Texture getTexture() {
-		if (go_right) return nyan_texture_r;
-		if (!go_right) return nyan_texture_l;
-		return nyan_texture_r;
 	}
 	
 	boolean getDirection() {
 		return go_right;
 	}
 	
-	void changeDirection() {
-		go_right = !go_right;
+	void changeDirectionLeft() {
+		go_right = false;
+		setTexture(nyan_texture_l);
+	}
+	
+	void changeDirectionRight() {
+		go_right = true;
+		setTexture(nyan_texture_r);
 	}
 	
 	void goLeft() {
-		go_right = false;
+		translateX(-500 * Gdx.graphics.getDeltaTime());
 	}
 	
 	void goRight() {
-		go_right = true;
+		translateX(500 * Gdx.graphics.getDeltaTime());
 	}
 }

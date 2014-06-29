@@ -18,6 +18,7 @@ public class World {
 	private int score = 0;
 	private int health = 3;
 	private Long time;
+	private Bonus bonus;
 	
 	World() {
 		projectiles = new Array<Bullet>();
@@ -37,16 +38,14 @@ public class World {
 	}
 	
 	void addEnnemy(float x, float y) {
-		Ennemy ennemy = new Ennemy(x, y, 100.0f, 84.0f);
+		Ennemy ennemy = new Ennemy(x, y);
 		ennemies.add(ennemy);
 	}
 	
 	void spawnMeteorite() {
-		Meteorite meteorite = new Meteorite((float)MathUtils.random(0, 640), 480.0f, 64.0f, 64.0f);
-		meteorite.x = MathUtils.random(0, 576);
-		meteorite.y = 480;
-		meteorite.width = 64;
-		meteorite.height = 64;
+		Meteorite meteorite = new Meteorite((float)MathUtils.random(0, 640), 480.0f);
+		//meteorite.x = MathUtils.random(0, 576);
+		//meteorite.y = 480;
 		meteorites.add(meteorite);
 		lastDropTime = TimeUtils.nanoTime();
 	}
@@ -97,6 +96,10 @@ public class World {
 		timers.add(time);
 	}
 	
+	void createBomb(int x, int y, String type) {
+		bonus = new Bonus(x,y,type);
+	}
+	
 	boolean checkSpawn() {
 		Iterator<Long> iter = timers.iterator();
 		while (iter.hasNext()) {
@@ -107,5 +110,13 @@ public class World {
 			}
 		}
 		return false;
+	}
+	
+	Bonus getBonus() {
+		return bonus;
+	}
+	
+	void destroyBonus() {
+		bonus = null;
 	}
 }

@@ -31,7 +31,7 @@ public class GameScreen implements Screen {
 	GameScreen(MyGdxGame game) {
 		this.game = game;
 		batch = new SpriteBatch();
-		trollface = new Trollface(320.0f, 20.0f, 150.0f, 84.0f);
+		trollface = new Trollface(320, 20);
 		world = new World();
 		world.addEnnemy(20.0f, 400.0f);
 		world.addEnnemy(200.0f, 400.0f);
@@ -53,26 +53,29 @@ public class GameScreen implements Screen {
 		batch.begin();
 		font.draw(batch, str_score, 20, 380);
 		for (i = 0; i < world.getHealth(); i++) batch.draw(heart, 20 + 50 * i, 400);
-		batch.draw(trollface.getTexture(), trollface.x, trollface.y);
-		for (Meteorite meteorite: world.getMeteorites()) batch.draw(meteorite.getTexture(), meteorite.x, meteorite.y);
-		for (Ennemy ennemy: world.getEnnemies()) batch.draw(ennemy.getTexture(), ennemy.x, ennemy.y);
+		trollface.draw(batch);
+		for (Meteorite meteorite: world.getMeteorites()) meteorite.draw(batch);
+		for (Ennemy ennemy: world.getEnnemies()) ennemy.draw(batch);
 		for (Bullet projectile: world.getProjectiles()) batch.draw(projectile.getTexture(), projectile.x, projectile.y);
 		if (Gdx.app.getType() == Application.ApplicationType.Android) batch.draw(arrow_l, 20, 20);
 		if (Gdx.app.getType() == Application.ApplicationType.Android) batch.draw(arrow_r, 168, 20);
+		if (world.getBonus() != null) {
+			world.getBonus().draw(batch);
+			System.out.println("DRAAAAAAW");
+		}
 		batch.end();
 		if (Gdx.input.isTouched() && Gdx.input.getX() > 296 && Gdx.input.getX() < 640 && world.fireReady()) trollface.fire(world);
 		if (Gdx.input.isTouched(1) && Gdx.input.getX(1) > 296 && Gdx.input.getX(1) < 640 && world.fireReady()) trollface.fire(world);
 		if(Gdx.input.isKeyPressed(Keys.LEFT)) trollface.moveLeft();
 		if(Gdx.input.isKeyPressed(Keys.RIGHT)) trollface.moveRight();
 		if (Gdx.input.isKeyPressed(Keys.SPACE) && world.fireReady()) trollface.fire(world);
-		//if (Gdx.input.isTouched() && Gdx.input.getX() < 200) trollface.moveLeft();
-		//if (Gdx.input.isTouched() && Gdx.input.getX() > 440) trollface.moveRight();
+		if (Gdx.input.isKeyPressed(Keys.ENTER)) world.createBomb(100, 300, "bomb");
 		if (Gdx.input.isTouched() && Gdx.input.getX() <= 148 && Gdx.input.getX() >= 20 && Gdx.input.getY() <= 460 && Gdx.input.getY() >= 332) trollface.moveLeft();
 		if (Gdx.input.isTouched() && Gdx.input.getX() <= 296 && Gdx.input.getX() >= 168 && Gdx.input.getY() <= 460 && Gdx.input.getY() >= 332) trollface.moveRight();
 		if (Gdx.input.isTouched(1) && Gdx.input.getX(1) <= 148 && Gdx.input.getX(1) >= 20 && Gdx.input.getY(1) <= 460 && Gdx.input.getY(1) >= 332) trollface.moveLeft();
 		if (Gdx.input.isTouched(1) && Gdx.input.getX(1) <= 296 && Gdx.input.getX(1) >= 168 && Gdx.input.getY(1) <= 460 && Gdx.input.getY(1) >= 332) trollface.moveRight();
-		if(trollface.x < 0) trollface.x = 0;
-		if (trollface.x > 552) trollface.x = 552;
+		if(trollface.getX() < 0) trollface.setX(0);
+		if (trollface.getX() > 552) trollface.setX(552);
 		Iterator<Bullet> iter_projectiles = world.getProjectiles().iterator();
 		while (iter_projectiles.hasNext()) {
 			Bullet projectile = iter_projectiles.next();
@@ -82,10 +85,10 @@ public class GameScreen implements Screen {
 		if(TimeUtils.nanoTime() - world.getLastDropTime() > 500000000) world.spawnMeteorite();
 		Iterator<Meteorite> iter_meteorites = world.getMeteorites().iterator();
 		while(iter_meteorites.hasNext()) {
-			Rectangle meteorite = iter_meteorites.next();
-			meteorite.y -= 500 * Gdx.graphics.getDeltaTime();
-			if (meteorite.y + 32 < 0) iter_meteorites.remove();
-			if (meteorite.overlaps(trollface)) {
+			Meteorite meteorite = iter_meteorites.next();
+			meteorite.translateY(-500 * Gdx.graphics.getDeltaTime());
+			if (meteorite.getY() + 32 < 0) iter_meteorites.remove();
+			if (meteorite.getBoundingRectangle().overlaps(trollface.getBoundingRectangle())) {
 				System.out.println("Plif plaf plof");
 				iter_meteorites.remove();
 				world.decHealth();
@@ -94,12 +97,12 @@ public class GameScreen implements Screen {
 		Iterator<Ennemy> iter_ennemy = world.getEnnemies().iterator();
 		while(iter_ennemy.hasNext()) {
 			Ennemy ennemy = iter_ennemy.next();
-			if (ennemy.getDirection()) ennemy.x += 500 * Gdx.graphics.getDeltaTime();
-			if (!ennemy.getDirection()) ennemy.x -= 500 * Gdx.graphics.getDeltaTime();
-			if (ennemy.x <= 0) ennemy.goRight(); 
-			if (ennemy.x >= 540) ennemy.goLeft();
+			if (ennemy.getDirection()) ennemy.goRight();
+			if (!ennemy.getDirection()) ennemy.goLeft();
+			if (ennemy.getX() <= 0) ennemy.changeDirectionRight(); 
+			if (ennemy.getX() >= 540) ennemy.changeDirectionLeft();
 			for (i = 0; i < world.getProjectiles().size; i++) {
-				if (ennemy.overlaps(world.getProjectiles().get(i))) {
+				if (ennemy.getBoundingRectangle().overlaps(world.getProjectiles().get(i))) {
 					iter_ennemy.remove();
 					world.addTimer();
 					world.removeProjectile(i);
@@ -108,12 +111,14 @@ public class GameScreen implements Screen {
 				}
 			}
 		}
+		if (world.getBonus() != null) {
+			System.out.println(world.getBonus().getY());
+			world.getBonus().move();
+			if (world.getBonus().getBoundingRectangle().overlaps(trollface.getBoundingRectangle())) world.destroyBonus();
+		}
 		if (world.getHealth() <= 0) {
 			game.setScreen(new GameOver(game));
 		}
-		/*accelY = Gdx.input.getAccelerometerY();
-		if (accelY < -2) trollface.moveLeft();
-		if (accelY > 2) trollface.moveRight();*/
 		str_score = "Score: " + Integer.toString(world.getScore());
 		if (world.checkSpawn()) world.addEnnemy((float)MathUtils.random(0, 540), (float)MathUtils.random(300,400));
 	}
