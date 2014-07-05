@@ -112,7 +112,8 @@ public class GameScreen implements Screen {
 			if (world.getBonus().getBoundingRectangle().overlaps(world.getTrollface().getBoundingRectangle())) world.destroyBonus();
 		}
 		if (world.getTrollface().getHealth() <= 0) {
-			game.setScreen(new GameOver(game));
+			if (world.getScore() > world.getHighScore()) world.setHighScore(); 
+			game.setScreen(new GameOver(game,world.getScore(), world.getHighScore()));
 		}
 		str_score = "Score: " + Integer.toString(world.getScore());
 		if (world.checkSpawn()) world.addEnnemy((float)MathUtils.random(0, 540), (float)MathUtils.random(300,400));

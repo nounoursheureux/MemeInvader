@@ -2,8 +2,12 @@ package com.mygdx.game;
 
 import java.util.Vector;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.NumberUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
@@ -21,6 +25,8 @@ public class World {
 	private Long time;
 	private Long bombTimer;
 	private Bonus bonus;
+	Preferences pref = Gdx.app.getPreferences("preferences");
+	int highScore = pref.getInteger("highscore", 0);
 	
 	World() {
 		projectiles = new Array<Bullet>();
@@ -144,5 +150,15 @@ public class World {
 	
 	Trollface getTrollface() {
 		return trollface;
+	}
+	
+	int getHighScore() {
+		return highScore;
+	}
+	
+	void setHighScore() {
+		pref.putInteger("highscore", score);
+		pref.flush();
+		highScore = pref.getInteger("highscore");
 	}
 }
