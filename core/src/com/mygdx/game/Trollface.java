@@ -11,6 +11,7 @@ public class Trollface extends Sprite {
 	private Texture trollface_l;
 	private Texture trollface_r;
 	private boolean go_right;
+	private int health = 3;
 	
 	Trollface(int x, int y) {
 		super(new Texture(Gdx.files.internal("trollface_right.png")));
@@ -39,5 +40,17 @@ public class Trollface extends Sprite {
 		Bullet projectile = new Bullet(getX() + 75, getY(), 32.0f, 32.0f);
 		world.resetFireTimer();
 		world.addProjectile(projectile);
+	}
+	
+	int getHealth() {
+		return health;
+	}
+	
+	void decHealth() {
+		health--;
+	}
+	
+	void incHealth() {
+		health++;
 	}
 }

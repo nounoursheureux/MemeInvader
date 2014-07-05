@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+
 import java.util.Iterator;
 
 public class World {
@@ -13,11 +14,12 @@ public class World {
 	private Array<Meteorite> meteorites;
 	private Array<Ennemy> ennemies;
 	private Array<Long> timers;
+	private Trollface trollface;
 	private long lastFireTime;
 	private long lastDropTime;
 	private int score = 0;
-	private int health = 3;
 	private Long time;
+	private Long bombTimer;
 	private Bonus bonus;
 	
 	World() {
@@ -25,8 +27,10 @@ public class World {
 		meteorites = new Array<Meteorite>();
 		ennemies = new Array<Ennemy>();
 		timers = new Array<Long>();
+		trollface = new Trollface(320, 20);
 		lastFireTime = TimeUtils.nanoTime();
 		lastDropTime = TimeUtils.nanoTime();
+		bombTimer = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
 	}
 	
 	void resetFireTimer() {
@@ -79,16 +83,8 @@ public class World {
 		return score;
 	}
 	
-	int getHealth() {
-		return health;
-	}
-	
 	void incScore() {
 		score++;
-	}
-	
-	void decHealth() {
-		health--;
 	}
 	
 	void addTimer() {
@@ -96,8 +92,20 @@ public class World {
 		timers.add(time);
 	}
 	
-	void createBomb(int x, int y, String type) {
-		bonus = new Bonus(x,y,type);
+	void createBomb(int x, int y) {
+		if (TimeUtils.nanosToMillis(TimeUtils.nanoTime()) - bombTimer >= 10000) {
+			int type = MathUtils.random(0,1);
+			switch (type) {
+				case 0:
+					bonus = new Bonus(x,y,"health" );
+					break;
+				case 1:
+					bonus = new Bonus(x,y,"bomb");
+					break;
+			}
+			bombTimer = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
+			System.out.println(type);		
+		}
 	}
 	
 	boolean checkSpawn() {
@@ -117,6 +125,24 @@ public class World {
 	}
 	
 	void destroyBonus() {
+		if (bonus.getType() == "health") trollface.incHealth();
+		if (bonus.getType() == "bomb") {
+			System.out.println("BOOOOMBE");
+			Iterator<Ennemy> iter = getEnnemies().iterator();
+			while (iter.hasNext()) {
+				Ennemy ennemy = iter.next();
+			}
+			int size = getEnnemies().size;
+			for (int i = 0; i < size; i++) {
+				iter.remove();
+				addTimer();
+				incScore();
+			}
+		}
 		bonus = null;
+	}
+	
+	Trollface getTrollface() {
+		return trollface;
 	}
 }

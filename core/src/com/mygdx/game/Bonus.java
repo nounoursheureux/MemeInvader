@@ -6,16 +6,22 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Bonus extends Sprite {
 	
+	private String type;
+	
 	Bonus(int x,int y, String type) {
-		super(new Texture(Gdx.files.internal("sun.png")));
+		super(new Texture(Gdx.files.internal("heart.png")));
+		if (type == "bomb") setTexture(new Texture(Gdx.files.internal("bomb.png")));
+		else if (type == "health") setTexture(new Texture(Gdx.files.internal("heart.png")));
 		setPosition(x,y);
-		/*if (type == "bomb") {
-			System.out.println("BOOOMBE");
-			setTexture(new Texture(Gdx.files.internal("heart.png")));
-		}*/
+		this.type = new String();
+		this.type = type;
 	}
 	
 	void move() {
-		translateY(-50 * Gdx.graphics.getDeltaTime());
+		translateY(-250 * Gdx.graphics.getDeltaTime());
+	}
+	
+	String getType() {
+		return type;
 	}
 }
